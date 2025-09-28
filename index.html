@@ -4,236 +4,224 @@
 <meta charset="UTF-8">
 <title>Чё поесть?</title>
 <style>
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #fff8e7;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    overflow: hidden;
-    flex-direction: column;
-  }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #fff8e7;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  flex-direction: column;
+}
 
-  /* Анимация загрузки */
-  .loader {
-    display: flex;
-    gap: 10px;
-  }
+/* Загрузка */
+.loader { display: flex; gap: 10px; }
+.dot { width: 20px; height: 20px; background: #ffb74d; border-radius: 50%; animation: bounce 0.6s infinite alternate; }
+.dot:nth-child(2) { animation-delay: 0.2s; }
+.dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce { to { transform: translateY(-20px); background: #ffa726; } }
 
-  .dot {
-    width: 20px;
-    height: 20px;
-    background: #ffb74d;
-    border-radius: 50%;
-    animation: bounce 0.6s infinite alternate;
-  }
+/* Основной контейнер */
+#menu-container { display: none; flex-direction: column; align-items: center; width: 100%; padding: 20px; box-sizing: border-box; position: relative; }
+.categories { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; }
+.category { font-size: 1.4em; padding: 12px 20px; background: #ffebc0; border-radius: 15px; cursor: pointer; transition: transform 0.2s, background 0.2s; user-select: none; border: none; }
+.category:hover { transform: scale(1.1); background: #ffd580; }
 
-  .dot:nth-child(2) { animation-delay: 0.2s; }
-  .dot:nth-child(3) { animation-delay: 0.4s; }
+.dishes { display: none; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 20px; }
+.dishes.show { display: flex; }
+.dish { font-size: 1.4em; padding: 10px 20px; background: #ffebc0; border-radius: 15px; cursor: pointer; transition: transform 0.2s, background 0.2s; }
+.dish:hover { transform: scale(1.1); background: #ffd580; }
 
-  @keyframes bounce {
-    to { transform: translateY(-20px); background: #ffa726; }
-  }
+#back-button { font-size: 2em; position: fixed; top: 20px; left: 20px; background: #ffebc0; padding: 10px 15px; border-radius: 15px; cursor: pointer; transition: transform 0.2s, background 0.2s; display: none; border: none; z-index: 10; }
+#back-button:hover { transform: scale(1.1); background: #ffd580; }
 
-  #menu-container {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    padding: 20px;
-    box-sizing: border-box;
-    position: relative;
-  }
+#controls { display: flex; gap: 20px; margin-bottom: 20px; }
+.control-btn { width: 60px; height: 60px; font-size: 2em; display: flex; align-items: center; justify-content: center; background: #ffebc0; border-radius: 15px; border: none; cursor: pointer; transition: background 0.2s; }
+.control-btn:hover { background: #ffd580; }
 
-  .categories, .dishes {
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-bottom: 20px;
-  }
+#list-box { display: none; margin-top: 20px; background: #fff2d6; padding: 15px 20px; border-radius: 15px; width: 250px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); position: relative; }
+#list-box h2 { text-align: center; margin:0 0 10px; }
+#list { list-style-type: none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px; font-size:1.2em; text-align:left; }
+#checkout-btn { position: absolute; bottom: 10px; right: 10px; font-size: 2em; border: none; background: transparent; cursor: pointer; }
 
-  .category, .dish, #roulette, #clear {
-    font-size: 1.4em;
-    padding: 10px 20px;
-    background: #ffebc0;
-    border-radius: 15px;
-    cursor: pointer;
-    transition: transform 0.2s, background 0.2s;
-    user-select: none;
-    border: none;
-  }
+/* Рулетка */
+#roulette-container { display: none; flex-direction: column; align-items: center; gap: 20px; position: relative; }
+#roulette-window { width: 250px; height: 125px; overflow: hidden; border-radius: 15px; background: #fff2d6; border: 2px solid #ffd580; position: relative; }
+#roulette-items { display: flex; flex-direction: column; }
+.roulette-item { height: 50px; display: flex; align-items: center; justify-content: center; font-size: 1.4em; border-bottom: 1px solid #ffd580; }
+#pointer { width: 0; height: 0; border-top: 20px solid transparent; border-bottom: 20px solid transparent; border-left: 30px solid red; position: absolute; top: 50%; right: -30px; transform: translateY(-50%); z-index: 10; }
 
-  .category:hover, .dish:hover, #roulette:hover, #clear:hover {
-    transform: scale(1.1);
-    background: #ffd580;
-  }
-
-  /* Изначально блюда скрыты */
-  .dishes {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .dishes.show {
-    display: flex;
-  }
-
-  #controls {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 20px;
-  }
-
-  /* Стрелка назад фиксированная */
-  #back-button {
-    font-size: 2em;
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    background: #ffebc0;
-    padding: 10px 15px;
-    border-radius: 15px;
-    cursor: pointer;
-    transition: transform 0.2s, background 0.2s;
-    display: none;
-    border: none;
-  }
-
-  #back-button:hover {
-    transform: scale(1.1);
-    background: #ffd580;
-  }
-
-  #list {
-    list-style-type: none;
-    padding: 0;
-    font-size: 1.2em;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 5px;
-  }
+/* Стрелка назад в рулетке */
+#back-roulette { position: fixed; top: 20px; left: 20px; z-index: 10; font-size: 2em; border: none; background: #ffebc0; padding: 10px 15px; border-radius: 15px; cursor: pointer; }
+#back-roulette:hover { background: #ffd580; transform: scale(1.1); }
 </style>
 </head>
 <body>
 
-<!-- Загрузка -->
-<div class="loader">
-  <div class="dot"></div>
-  <div class="dot"></div>
-  <div class="dot"></div>
-</div>
+<div class="loader"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
 
 <div id="menu-container">
-  <!-- Выбор категорий -->
   <div class="categories">
-    <div class="category" data-category="first">Первое</div>
-    <div class="category" data-category="second">Второе</div>
-    <div class="category" data-category="salads">Салаты</div>
-    <div class="category" data-category="breakfast">Завтраки</div>
-    <div class="category" data-category="tea">К чаю</div>
+    <div class="category" data-category="first">🍲 Первое</div>
+    <div class="category" data-category="second">🥘 Второе</div>
+    <div class="category" data-category="salads">🥗 Салаты</div>
+    <div class="category" data-category="breakfast">🍳 Завтраки</div>
+    <div class="category" data-category="tea">🍰 К чаю</div>
   </div>
 
-  <!-- Кнопка назад фиксированная -->
   <button id="back-button">⬅️</button>
 
-  <!-- Блюда внутри категории -->
   <div id="dishes-container">
     <div class="dishes" data-category="first">
-      <div class="dish" data-name="Борщ">Борщ</div>
-      <div class="dish" data-name="Лапша">Лапша</div>
+      <div class="dish" data-name="🍲 Борщ">🍲 Борщ</div>
+      <div class="dish" data-name="🍜 Лапша">🍜 Лапша</div>
     </div>
     <div class="dishes" data-category="second">
-      <div class="dish" data-name="Плов">Плов</div>
-      <div class="dish" data-name="Мясо с ананасами">Мясо с ананасами</div>
+      <div class="dish" data-name="🍛 Плов">🍛 Плов</div>
+      <div class="dish" data-name="🥩 Мясо × ананасами">🥩 Мясо с ананасами</div>
     </div>
     <div class="dishes" data-category="salads">
-      <div class="dish" data-name="Полянка">Полянка</div>
+      <div class="dish" data-name="🥗 Полянка">🥗 Полянка</div>
     </div>
     <div class="dishes" data-category="breakfast">
-      <div class="dish" data-name="Яичница">Яичница</div>
-      <div class="dish" data-name="Конвертики">Конвертики</div>
+      <div class="dish" data-name="🍳 Яичница">🍳 Яичница</div>
+      <div class="dish" data-name="🥟 Конвертики">🥟 Конвертики</div>
     </div>
     <div class="dishes" data-category="tea">
-      <div class="dish" data-name="Чизкейк">Чизкейк</div>
-      <div class="dish" data-name="Пирог с ягодами">Пирог с ягодами</div>
+      <div class="dish" data-name="🍰 Чизкейк">🍰 Чизкейк</div>
+      <div class="dish" data-name="🥧 Пирог">🥧 Пирог</div>
     </div>
   </div>
 
-  <!-- Кнопки управления -->
   <div id="controls">
-    <button id="roulette">🎲</button>
-    <button id="clear">🗑</button>
+    <button id="rouletteBtn" class="control-btn">🎲</button>
+    <button id="clear" class="control-btn">🗑</button>
   </div>
 
-  <h2>Список</h2>
-  <ul id="list"></ul>
+  <div id="list-box">
+    <h2>📝 Список</h2>
+    <ul id="list"></ul>
+    <button id="checkout-btn">🛒</button>
+  </div>
+</div>
+
+<div id="roulette-container">
+  <div id="roulette-window">
+    <div id="roulette-items"></div>
+    <div id="pointer"></div>
+  </div>
+  <button id="spinBtn" class="control-btn">🎲</button>
+  <button id="back-roulette">⬅️</button>
 </div>
 
 <script>
 const categories = document.querySelectorAll('.category');
 const dishesContainers = document.querySelectorAll('.dishes');
-const cart = document.getElementById('list');
 const allDishes = document.querySelectorAll('.dish');
+const cart = document.getElementById('list');
+const listBox = document.getElementById('list-box');
 const backButton = document.getElementById('back-button');
 
-// Показ выбранной категории
-categories.forEach(cat => {
-  cat.addEventListener('click', () => {
+const rouletteContainer = document.getElementById('roulette-container');
+const rouletteBtn = document.getElementById('rouletteBtn');
+const rouletteItems = document.getElementById('roulette-items');
+const spinBtn = document.getElementById('spinBtn');
+const backRoulette = document.getElementById('back-roulette');
+const checkoutBtn = document.getElementById('checkout-btn');
+
+const dishNames = Array.from(allDishes).map(d => d.dataset.name);
+
+// Показ категорий
+categories.forEach(cat=>{
+  cat.addEventListener('click', ()=>{
     const category = cat.dataset.category;
-    dishesContainers.forEach(dc => {
-      if(dc.dataset.category === category) {
-        dc.classList.add('show');
-      } else {
-        dc.classList.remove('show');
-      }
+    dishesContainers.forEach(dc=>{
+      dc.classList.toggle('show', dc.dataset.category===category);
     });
-    document.querySelector('.categories').style.display = 'none';
-    backButton.style.display = 'block';
+    document.querySelector('.categories').style.display='none';
+    backButton.style.display='block';
   });
 });
 
-// Кнопка назад
-backButton.addEventListener('click', () => {
-  dishesContainers.forEach(dc => dc.classList.remove('show'));
-  document.querySelector('.categories').style.display = 'flex';
-  backButton.style.display = 'none';
+// Назад из категории
+backButton.addEventListener('click', ()=>{
+  dishesContainers.forEach(dc=>dc.classList.remove('show'));
+  document.querySelector('.categories').style.display='flex';
+  backButton.style.display='none';
 });
 
-// Добавляем блюдо в список
-allDishes.forEach(dish => {
-  dish.addEventListener('click', () => {
-    const li = document.createElement('li');
-    li.textContent = dish.dataset.name;
-    cart.appendChild(li);
-  });
-});
-
-// Рандомное блюдо из всех категорий
-document.getElementById('roulette').addEventListener('click', () => {
-  const randomDish = allDishes[Math.floor(Math.random() * allDishes.length)];
-  const li = document.createElement('li');
-  li.textContent = randomDish.dataset.name;
-  cart.appendChild(li);
-  alert(`Вы выбрали: ${randomDish.dataset.name}`);
-});
-
-// Очистка списка
-document.getElementById('clear').addEventListener('click', () => {
+// Добавление блюда с объединением
+const dishCount = {};
+function updateList(name){
+  dishCount[name] = (dishCount[name]||0)+1;
   cart.innerHTML = '';
+  for(const [dish, count] of Object.entries(dishCount)){
+    const li = document.createElement('li');
+    li.textContent = count>1 ? `${dish} ×${count}` : dish;
+    cart.appendChild(li);
+  }
+  listBox.style.display='block';
+}
+
+allDishes.forEach(dish=>{
+  dish.addEventListener('click', ()=> updateList(dish.dataset.name));
 });
 
-// Скрываем загрузку
-setTimeout(() => {
-  document.querySelector('.loader').style.display = 'none';
-  document.getElementById('menu-container').style.display = 'flex';
-}, 2000);
-</script>
+// Очистка
+document.getElementById('clear').addEventListener('click', ()=>{
+  cart.innerHTML=''; listBox.style.display='none'; for(let key in dishCount) delete dishCount[key];
+});
 
+// --- Рулетка ---
+rouletteBtn.addEventListener('click', ()=>{
+  document.getElementById('menu-container').style.display='none';
+  rouletteContainer.style.display='flex';
+  rouletteItems.innerHTML='';
+  dishNames.forEach(name=>{
+    const div = document.createElement('div');
+    div.className='roulette-item';
+    div.textContent=name;
+    rouletteItems.appendChild(div);
+  });
+});
+
+backRoulette.addEventListener('click', ()=>{
+  rouletteContainer.style.display='none';
+  document.getElementById('menu-container').style.display='flex';
+});
+
+// Прокрутка рулетки вертикально с центром
+spinBtn.addEventListener('click', ()=>{
+  const totalItems = dishNames.length;
+  const spins = 3; // повторы для эффекта
+  const spinIndex = Math.floor(Math.random()*totalItems);
+  const move = -(spinIndex + totalItems*spins) * 50 + 25; // 2.5 ячейки
+  rouletteItems.style.transition='transform 3s cubic-bezier(0.25,1,0.3,1)';
+  rouletteItems.style.transform=`translateY(${move}px)`;
+  setTimeout(()=>{
+    updateList(dishNames[spinIndex]);
+    rouletteItems.style.transition='none';
+    rouletteItems.style.transform=`translateY(${-spinIndex*50 + 25}px)`;
+  },3000);
+});
+
+// Кнопка тележки 🛒 для заметок
+checkoutBtn.addEventListener('click', ()=>{
+  const items = Array.from(document.querySelectorAll('#list li')).map(li=>li.textContent);
+  if(items.length===0) return alert("Список пуст!");
+  let noteText = '';
+  items.forEach(item=>{
+    noteText += `☐ ${item}\n`;
+  });
+  prompt("Скопируйте список для заметок:", noteText);
+});
+
+// Скрыть загрузку
+setTimeout(()=>{
+  document.querySelector('.loader').style.display='none';
+  document.getElementById('menu-container').style.display='flex';
+},2000);
+</script>
 </body>
 </html>
