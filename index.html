@@ -101,6 +101,30 @@ body {
 
 #back-roulette { position: fixed; top: 20px; left: 20px; z-index: 20; font-size: 2em; border: none; background: #ffebc0; padding: 10px 15px; border-radius: 15px; cursor: pointer; }
 #back-roulette:hover { background: #ffd580; transform: scale(1.1); }
+
+/* --- СТИЛИ ДЛЯ УВЕДОМЛЕНИЯ --- */
+#notification-toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translate(-50%, 150%); /* Изначально скрыто под экраном */
+  background: rgba(0, 0, 0, 0.75);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-size: 1.2em;
+  font-weight: 500;
+  z-index: 1000;
+  opacity: 0;
+  transition: transform 0.5s cubic-bezier(0.215, 0.610, 0.355, 1), opacity 0.5s ease;
+  pointer-events: none; /* Чтобы не мешало кликам */
+}
+
+#notification-toast.show {
+  transform: translate(-50%, 0); /* Появляется на экране */
+  opacity: 1;
+}
+
 </style>
 </head>
 <body>
@@ -136,6 +160,9 @@ body {
   <button id="back-roulette">⬅️</button>
 </div>
 
+<!-- НОВЫЙ ЭЛЕМЕНТ ДЛЯ УВЕДОМЛЕНИЯ -->
+<div id="notification-toast"></div>
+
 <script>
 // ОБЩАЯ ЛОГИКА
 const categories = document.querySelectorAll('.category'), dishesContainers = document.querySelectorAll('.dishes'), allDishes = document.querySelectorAll('.dish'), cart = document.getElementById('list'), listBox = document.getElementById('list-box'), backButton = document.getElementById('back-button'), checkoutBtn = document.getElementById('checkout-btn');
@@ -145,6 +172,23 @@ const wheelContainer = document.getElementById('wheel-container'), rouletteBtn =
 const dishNames = Array.from(allDishes).map(d => d.dataset.name);
 const colors = ["#FFDDC1", "#FFFACD", "#D4F0F0", "#F0E68C", "#E6E6FA", "#FFC0CB", "#B0E0E6", "#F5DEB3", "#98FB98", "#F08080", "#ADD8E6", "#FFB6C1"];
 let isSpinning = false, currentRotation = 0;
+
+// --- НОВАЯ ЛОГИКА УВЕДОМЛЕНИЙ ---
+const notificationToast = document.getElementById('notification-toast');
+let notificationTimer;
+
+function showNotification(message) {
+  // Если таймер уже запущен, сбрасываем его
+  clearTimeout(notificationTimer);
+  
+  notificationToast.textContent = message;
+  notificationToast.classList.add('show');
+  
+  // Устанавливаем таймер на скрытие уведомления через 3 секунды
+  notificationTimer = setTimeout(() => {
+    notificationToast.classList.remove('show');
+  }, 3000);
+}
 
 function createWheel() {
   wheelLabelsContainer.innerHTML = '';
@@ -184,7 +228,10 @@ spinBtn.addEventListener('click', () => {
   currentRotation += totalRotation;
   wheel.style.transform = `rotate(${currentRotation}deg)`;
   wheel.addEventListener('transitionend', () => {
-    updateList(dishNames[winningIndex]);
+    const winningDish = dishNames[winningIndex];
+    updateList(winningDish);
+    // ВЫЗЫВАЕМ УВЕДОМЛЕНИЕ
+    showNotification(`Выпало: ${winningDish}`);
     isSpinning = false;
     spinBtn.disabled = false;
   }, { once: true });
@@ -197,7 +244,6 @@ const dishCount = {};
 function updateList(name) { dishCount[name] = (dishCount[name] || 0) + 1; cart.innerHTML = ''; for (const [dish, count] of Object.entries(dishCount)) { const li = document.createElement('li'); li.textContent = count > 1 ? `${dish} ×${count}` : dish; cart.appendChild(li); } listBox.style.display = 'block'; }
 allDishes.forEach(dish => dish.addEventListener('click', () => updateList(dish.dataset.name)));
 
-// --- ИЗМЕНЕНИЕ 1: ПОДТВЕРЖДЕНИЕ ПЕРЕД ОЧИСТКОЙ ---
 document.getElementById('clear').addEventListener('click', () => {
   if (confirm("Вы уверены, что хотите очистить список?")) {
     cart.innerHTML = '';
@@ -206,29 +252,17 @@ document.getElementById('clear').addEventListener('click', () => {
   }
 });
 
-// --- ИЗМЕНЕНИЕ 2: ОТПРАВКА В ЗАМЕТКИ ЧЕРЕЗ СИСТЕМНОЕ МЕНЮ ---
 checkoutBtn.addEventListener('click', async () => {
   const items = Array.from(document.querySelectorAll('#list li')).map(li => li.textContent);
   if (items.length === 0) {
     alert("Список пуст!");
     return;
   }
-  
   let noteText = "Мой список:\n" + items.map(item => `☐ ${item}`).join('\n');
-  
-  // Проверяем, поддерживает ли браузер Web Share API
   if (navigator.share) {
-    try {
-      await navigator.share({
-        title: 'Что поесть?',
-        text: noteText,
-      });
-      // console.log('Список успешно отправлен');
-    } catch (err) {
-      console.error('Ошибка при отправке списка:', err);
-    }
+    try { await navigator.share({ title: 'Что поесть?', text: noteText, }); }
+    catch (err) { console.error('Ошибка при отправке списка:', err); }
   } else {
-    // Если не поддерживает - используем старый метод
     prompt("Скопируйте список для заметок:", noteText);
   }
 });
