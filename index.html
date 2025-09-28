@@ -1,71 +1,59 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<title>Чё поесть?</title>
-<style>
-    body { font-family: Arial; padding: 20px; }
-    h1 { margin-bottom: 20px; }
-    .dish { display: inline-block; border: 1px solid #ccc; border-radius: 8px; margin: 10px; padding: 10px; width: 150px; text-align: center; }
-    .dish img { width: 100%; border-radius: 5px; }
-    .cart { margin-top: 20px; border-top: 1px solid #aaa; padding-top: 10px; }
-    button { margin-top: 5px; cursor: pointer; }
-</style>
+    <meta charset="UTF-8">
+    <title>Чё поесть?</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+        .dish { display: inline-block; margin: 10px; cursor: pointer; }
+        .dish img { width: 150px; height: 150px; border-radius: 10px; }
+        #cart { margin-top: 20px; }
+        button { margin: 10px; padding: 10px 20px; font-size: 16px; }
+    </style>
 </head>
 <body>
+    <h1>Чё поесть?</h1>
+    <div id="menu">
+        <div class="dish" data-name="Пицца">
+            <img src="https://i.imgur.com/8Q1KjXJ.jpg" alt="Пицца">
+            <p>Пицца</p>
+        </div>
+        <div class="dish" data-name="Суши">
+            <img src="https://i.imgur.com/pF2sLxD.jpg" alt="Суши">
+            <p>Суши</p>
+        </div>
+        <div class="dish" data-name="Бургер">
+            <img src="https://i.imgur.com/3y7ZbTf.jpg" alt="Бургер">
+            <p>Бургер</p>
+        </div>
+    </div>
 
-<h1>Домашнее меню</h1>
-<div id="menu"></div>
-<button onclick="chooseRandom()">🎲 Рулетка</button>
+    <div>
+        <button id="roulette">Рандомно выбрать</button>
+    </div>
 
-<div class="cart">
     <h2>Корзина</h2>
-    <ul id="cartList"></ul>
-</div>
+    <ul id="cart"></ul>
 
-<script>
-    const dishes = [
-        {name: "Паста", img: "https://i.imgur.com/8uFQw6L.png", ingredients: ["Макароны", "Сыр", "Соус"]},
-        {name: "Салат", img: "https://i.imgur.com/WQ2j4Mf.png", ingredients: ["Листья салата", "Помидоры", "Огурцы"]},
-        {name: "Омлет", img: "https://i.imgur.com/j6fR9VQ.png", ingredients: ["Яйца", "Молоко", "Сыр"]}
-    ];
+    <script>
+        const dishes = document.querySelectorAll('.dish');
+        const cart = document.getElementById('cart');
 
-    const menuDiv = document.getElementById("menu");
-    const cartList = document.getElementById("cartList");
-    let cart = [];
-
-    function renderMenu() {
-        menuDiv.innerHTML = "";
-        dishes.forEach((dish, index) => {
-            const div = document.createElement("div");
-            div.className = "dish";
-            div.innerHTML = `<img src="${dish.img}" alt="${dish.name}"><br><strong>${dish.name}</strong><br><button onclick="addToCart(${index})">Добавить в корзину</button>`;
-            menuDiv.appendChild(div);
+        dishes.forEach(dish => {
+            dish.addEventListener('click', () => {
+                const li = document.createElement('li');
+                li.textContent = dish.dataset.name;
+                cart.appendChild(li);
+            });
         });
-    }
 
-    function addToCart(index) {
-        const dish = dishes[index];
-        cart.push(dish);
-        updateCart();
-    }
-
-    function updateCart() {
-        cartList.innerHTML = "";
-        cart.forEach(d => {
-            const li = document.createElement("li");
-            li.textContent = `${d.name}: ${d.ingredients.join(", ")}`;
-            cartList.appendChild(li);
+        document.getElementById('roulette').addEventListener('click', () => {
+            const randomDish = dishes[Math.floor(Math.random() * dishes.length)];
+            const li = document.createElement('li');
+            li.textContent = randomDish.dataset.name;
+            cart.appendChild(li);
+            alert("Вы выбрали: " + randomDish.dataset.name);
         });
-    }
-
-    function chooseRandom() {
-        const dish = dishes[Math.floor(Math.random() * dishes.length)];
-        addToCart(dishes.indexOf(dish));
-        alert(`Выбрано случайное блюдо: ${dish.name}`);
-    }
-
-    renderMenu();
-</script>
+    </script>
 </body>
 </html>
