@@ -4,32 +4,79 @@
     <meta charset="UTF-8">
     <title>Чё поесть?</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
-        .dish { display: inline-block; margin: 10px; cursor: pointer; }
-        .dish img { width: 150px; height: 150px; border-radius: 10px; }
-        #cart { margin-top: 20px; }
-        button { margin: 10px; padding: 10px 20px; font-size: 16px; }
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            margin: 20px;
+            background: #fff8e7;
+            color: #333;
+        }
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .menu {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .dish {
+            font-size: 2em;
+            padding: 15px 25px;
+            background: #ffebc0;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .dish:hover {
+            transform: scale(1.1);
+            background: #ffd580;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 10px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            background-color: #ffb74d;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: #ffa726;
+        }
+
+        #cart {
+            margin-top: 20px;
+            list-style-type: none;
+            padding: 0;
+            font-size: 1.2em;
+        }
     </style>
 </head>
 <body>
     <h1>Чё поесть?</h1>
-    <div id="menu">
-        <div class="dish" data-name="Пицца">
-            <img src="https://i.imgur.com/8Q1KjXJ.jpg" alt="Пицца">
-            <p>Пицца</p>
-        </div>
-        <div class="dish" data-name="Суши">
-            <img src="https://i.imgur.com/pF2sLxD.jpg" alt="Суши">
-            <p>Суши</p>
-        </div>
-        <div class="dish" data-name="Бургер">
-            <img src="https://i.imgur.com/3y7ZbTf.jpg" alt="Бургер">
-            <p>Бургер</p>
-        </div>
+
+    <div class="menu">
+        <div class="dish" data-name="Пицца 🍕">🍕 Пицца</div>
+        <div class="dish" data-name="Суши 🍣">🍣 Суши</div>
+        <div class="dish" data-name="Бургер 🍔">🍔 Бургер</div>
+        <div class="dish" data-name="Салат 🥗">🥗 Салат</div>
+        <div class="dish" data-name="Торт 🍰">🍰 Торт</div>
+        <div class="dish" data-name="Кофе ☕">☕ Кофе</div>
     </div>
 
     <div>
-        <button id="roulette">Рандомно выбрать</button>
+        <button id="roulette">🎲 Рандомно выбрать</button>
+        <button id="clear">🗑 Очистить корзину</button>
     </div>
 
     <h2>Корзина</h2>
@@ -39,6 +86,7 @@
         const dishes = document.querySelectorAll('.dish');
         const cart = document.getElementById('cart');
 
+        // Добавляем блюдо в корзину по клику
         dishes.forEach(dish => {
             dish.addEventListener('click', () => {
                 const li = document.createElement('li');
@@ -47,12 +95,18 @@
             });
         });
 
+        // Рулетка: случайное блюдо
         document.getElementById('roulette').addEventListener('click', () => {
             const randomDish = dishes[Math.floor(Math.random() * dishes.length)];
             const li = document.createElement('li');
             li.textContent = randomDish.dataset.name;
             cart.appendChild(li);
-            alert("Вы выбрали: " + randomDish.dataset.name);
+            alert(`Вы выбрали: ${randomDish.dataset.name}`);
+        });
+
+        // Очистка корзины
+        document.getElementById('clear').addEventListener('click', () => {
+            cart.innerHTML = '';
         });
     </script>
 </body>
