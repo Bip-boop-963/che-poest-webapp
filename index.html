@@ -11,8 +11,8 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
   flex-direction: column;
+  height: 100vh;
 }
 
 /* Загрузка */
@@ -33,13 +33,15 @@ body {
 .dish { font-size: 1.4em; padding: 10px 20px; background: #ffebc0; border-radius: 15px; cursor: pointer; transition: transform 0.2s, background 0.2s; }
 .dish:hover { transform: scale(1.1); background: #ffd580; }
 
-#back-button { font-size: 2em; position: fixed; top: 20px; left: 20px; background: #ffebc0; padding: 10px 15px; border-radius: 15px; cursor: pointer; transition: transform 0.2s, background 0.2s; display: none; border: none; z-index: 10; }
+#back-button { font-size: 2em; position: fixed; top: 20px; left: 20px; background: #ffebc0; padding: 10px 15px; border-radius: 15px; cursor: pointer; display: none; border: none; z-index: 10; }
 #back-button:hover { transform: scale(1.1); background: #ffd580; }
 
+/* Контролы */
 #controls { display: flex; gap: 20px; margin-bottom: 20px; }
 .control-btn { width: 60px; height: 60px; font-size: 2em; display: flex; align-items: center; justify-content: center; background: #ffebc0; border-radius: 15px; border: none; cursor: pointer; transition: background 0.2s; }
 .control-btn:hover { background: #ffd580; }
 
+/* Список */
 #list-box { display: none; margin-top: 20px; background: #fff2d6; padding: 15px 20px; border-radius: 15px; width: 250px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); position: relative; }
 #list-box h2 { text-align: center; margin:0 0 10px; }
 #list { list-style-type: none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px; font-size:1.2em; text-align:left; }
@@ -47,12 +49,13 @@ body {
 
 /* Рулетка */
 #roulette-container { display: none; flex-direction: column; align-items: center; gap: 20px; position: relative; }
-#roulette-window { width: 250px; height: 125px; overflow: hidden; border-radius: 15px; background: #fff2d6; border: 2px solid #ffd580; position: relative; }
-#roulette-items { display: flex; flex-direction: column; }
-.roulette-item { height: 50px; display: flex; align-items: center; justify-content: center; font-size: 1.4em; border-bottom: 1px solid #ffd580; }
-#pointer { width: 0; height: 0; border-top: 20px solid transparent; border-bottom: 20px solid transparent; border-left: 30px solid red; position: absolute; top: 50%; right: -30px; transform: translateY(-50%); z-index: 10; }
+#roulette-window { width: 90%; max-width: 300px; height: 125px; overflow: hidden; border-radius: 15px; background: #fff2d6; border: 2px solid #ffd580; position: relative; }
+#roulette-items { display: flex; flex-direction: column; position: relative; top: 0; }
+.roulette-item { height: 50px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; border-bottom: 1px solid #ffd580; }
 
-/* Стрелка назад в рулетке */
+#pointer { width: 0; height: 0; border-top: 20px solid transparent; border-bottom: 20px solid transparent; border-left: 30px solid red; position: absolute; top: 50%; left: -30px; transform: translateY(-50%); z-index: 10; }
+
+/* Назад */
 #back-roulette { position: fixed; top: 20px; left: 20px; z-index: 10; font-size: 2em; border: none; background: #ffebc0; padding: 10px 15px; border-radius: 15px; cursor: pointer; }
 #back-roulette:hover { background: #ffd580; transform: scale(1.1); }
 </style>
@@ -151,7 +154,7 @@ backButton.addEventListener('click', ()=>{
   backButton.style.display='none';
 });
 
-// Добавление блюда с объединением
+// Объединение одинаковых позиций
 const dishCount = {};
 function updateList(name){
   dishCount[name] = (dishCount[name]||0)+1;
@@ -173,7 +176,7 @@ document.getElementById('clear').addEventListener('click', ()=>{
   cart.innerHTML=''; listBox.style.display='none'; for(let key in dishCount) delete dishCount[key];
 });
 
-// --- Рулетка ---
+// Рулетка
 rouletteBtn.addEventListener('click', ()=>{
   document.getElementById('menu-container').style.display='none';
   rouletteContainer.style.display='flex';
@@ -186,34 +189,38 @@ rouletteBtn.addEventListener('click', ()=>{
   });
 });
 
+// Назад из рулетки
 backRoulette.addEventListener('click', ()=>{
   rouletteContainer.style.display='none';
   document.getElementById('menu-container').style.display='flex';
 });
 
-// Прокрутка рулетки вертикально с центром
+// Вращение рулетки
 spinBtn.addEventListener('click', ()=>{
   const totalItems = dishNames.length;
-  const spins = 3; // повторы для эффекта
+  const spins = 5; // кол-во повторов
   const spinIndex = Math.floor(Math.random()*totalItems);
-  const move = -(spinIndex + totalItems*spins) * 50 + 25; // 2.5 ячейки
-  rouletteItems.style.transition='transform 3s cubic-bezier(0.25,1,0.3,1)';
+  const itemHeight = 50;
+  const centerOffset = 25; // половина высоты "окна" над центром
+
+  const move = -(spinIndex + totalItems*spins)*itemHeight + centerOffset;
+
+  rouletteItems.style.transition='transform 3s cubic-bezier(0.25,0.1,0.25,1)';
   rouletteItems.style.transform=`translateY(${move}px)`;
+
   setTimeout(()=>{
     updateList(dishNames[spinIndex]);
     rouletteItems.style.transition='none';
-    rouletteItems.style.transform=`translateY(${-spinIndex*50 + 25}px)`;
+    rouletteItems.style.transform=`translateY(${-spinIndex*itemHeight + centerOffset}px)`;
   },3000);
 });
 
-// Кнопка тележки 🛒 для заметок
+// Кнопка тележки
 checkoutBtn.addEventListener('click', ()=>{
   const items = Array.from(document.querySelectorAll('#list li')).map(li=>li.textContent);
   if(items.length===0) return alert("Список пуст!");
   let noteText = '';
-  items.forEach(item=>{
-    noteText += `☐ ${item}\n`;
-  });
+  items.forEach(item=> noteText += `☐ ${item}\n`);
   prompt("Скопируйте список для заметок:", noteText);
 });
 
