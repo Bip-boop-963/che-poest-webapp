@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <title>Чё поесть?</title>
+<!-- ИСПРАВЛЕНИЕ ДЛЯ IPHONE И ДРУГИХ МОБИЛЬНЫХ УСТРОЙСТВ -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 :root {
   --wheel-size: min(320px, 85vw);
@@ -157,13 +159,8 @@ function createWheel() {
     const textItem = document.createElement('div');
     textItem.className = 'wheel-label-text';
     textItem.textContent = name.replace(/ /g, "\u00A0");
-    
-    // --- ГЛАВНОЕ ИСПРАВЛЕНИЕ ---
-    // CSS rotate() считает 0 градусов сверху. Conic-gradient - справа.
-    // Добавляем 90 градусов, чтобы синхронизировать их.
     const cssRotateAngle = startAngle + (segmentAngle / 2) + 90;
     labelContainer.style.transform = `rotate(${cssRotateAngle}deg)`;
-
     labelContainer.appendChild(textItem);
     wheelLabelsContainer.appendChild(labelContainer);
   });
@@ -176,26 +173,17 @@ spinBtn.addEventListener('click', () => {
   if (isSpinning) return;
   isSpinning = true;
   spinBtn.disabled = true;
-
   const numItems = dishNames.length;
   const segmentAngle = 360 / numItems;
-  
   const winningIndex = Math.floor(Math.random() * numItems);
   const stopAngle = (winningIndex * segmentAngle) + (segmentAngle / 2);
-  
-  // Указатель слева (180 градусов в математической системе координат, где 0 - справа)
   const targetPosition = 180;
-  
   const normalizedCurrentRotation = (currentRotation % 360 + 360) % 360;
   const rotationNeeded = (targetPosition - stopAngle - normalizedCurrentRotation + 360) % 360;
-
   const spins = 8;
   const totalRotation = rotationNeeded + (360 * spins);
-  
   currentRotation += totalRotation;
-  
   wheel.style.transform = `rotate(${currentRotation}deg)`;
-  
   wheel.addEventListener('transitionend', () => {
     updateList(dishNames[winningIndex]);
     isSpinning = false;
