@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UltimaVPN Layout</title>
+    <style>
+        /* Общие стили и переменные */
+        :root {
+            --bg-color: #1a2e29;
+            --card-bg-color: #213c35;
+            --primary-green: #2fdd90;
+            --text-color: #ffffff;
+            --text-muted-color: #a0b3ad;
+            --expired-bg-color: #f7b731;
+            --border-color: #3c5a52;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap');
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: var(--bg-color);
+            font-family: 'Manrope', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Карточка VPN */
+        .vpn-card {
+            width: 100%;
+            max-width: 380px;
+            background-color: var(--card-bg-color);
+            border-radius: 24px;
+            padding: 20px;
+            box-sizing: border-box;
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* --- Header --- */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .card-header .title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .card-header .icons {
+            display: flex;
+            gap: 16px;
+        }
+
+        .card-header .icons svg {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            fill: var(--text-muted-color);
+        }
+
+        /* --- Animation Area --- */
+        .animation-area {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 220px;
+            margin-bottom: 24px;
+        }
+
+        .shield-logo {
+            width: 80px;
+            height: 80px;
+            background-color: var(--text-color);
+            -webkit-mask: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 2.25C12 2.25 5.25 4.5 5.25 10.5V16.5L12 21.75L18.75 16.5V10.5C18.75 4.5 12 2.25 12 2.25Z' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M12 2.25L18.75 10.5L12 21.75L5.25 10.5L12 2.25Z' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E%0A") no-repeat center;
+            mask: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 2.25C12 2.25 5.25 4.5 5.25 10.5V16.5L12 21.75L18.75 16.5V10.5C18.75 4.5 12 2.25 12 2.25Z' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M12 2.25L18.75 10.5L12 21.75L5.25 10.5L12 2.25Z' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E%0A") no-repeat center;
+            z-index: 2;
+        }
+
+        .wave {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 10px;
+            height: 10px;
+            border: 2px solid rgba(47, 221, 144, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: wave-pulse 4s infinite ease-out;
+            z-index: 1;
+        }
+
+        .wave:nth-child(2) { animation-delay: 0.8s; }
+        .wave:nth-child(3) { animation-delay: 1.6s; }
+        .wave:nth-child(4) { animation-delay: 2.4s; }
+        .wave:nth-child(5) { animation-delay: 3.2s; }
+
+
+        @keyframes wave-pulse {
+            0% {
+                width: 0;
+                height: 0;
+                opacity: 0.8;
+            }
+            100% {
+                width: 400px;
+                height: 400px;
+                opacity: 0;
+            }
+        }
+
+        /* --- Info Section --- */
+        .info-section {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .info-section .main-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .info-section .brand-name {
+            font-size: 28px;
+            font-weight: 800;
+        }
+        
+        .info-section .status {
+            font-size: 14px;
+            color: var(--text-muted-color);
+        }
+
+        .info-section .date-info {
+            text-align: right;
+        }
+        
+        .info-section .date {
+             font-size: 14px;
+        }
+        
+        .info-section .expired-label {
+            display: inline-block;
+            background-color: var(--expired-bg-color);
+            color: var(--bg-color);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        /* --- Actions Section --- */
+        .actions-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-green);
+            color: var(--bg-color);
+        }
+        
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+        
+        .btn-primary .price {
+            margin-left: auto;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--text-color);
+            border: 2px solid var(--border-color);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--border-color);
+        }
+        
+        .btn-outline .os {
+            color: var(--primary-green);
+            margin-left: 8px;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .btn-group .btn-outline {
+            flex: 1;
+        }
+        
+        .btn .icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+        }
+        
+        .btn .icon svg {
+             fill: currentColor;
+        }
+
+        /* --- Footer --- */
+        .card-footer {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--text-muted-color);
+            font-size: 14px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="vpn-card">
+        <!-- Header -->
+        <header class="card-header">
+            <div class="title">UltimaVPN</div>
+            <div class="icons">
+                <svg viewBox="0 0 24 24"><path d="M12,16A2,2 0 0,1 14,18A2,2 0 0,1 12,20A2,2 0 0,1 10,18A2,2 0 0,1 12,16M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4Z"></path></svg>
+                <svg viewBox="0 0 24 24"><path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"></path></svg>
+            </div>
+        </header>
+
+        <!-- Animation Area -->
+        <div class="animation-area">
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="shield-logo"></div>
+        </div>
+        
+        <!-- Info Section -->
+        <section class="info-section">
+            <div class="main-info">
+                <span class="brand-name">ultima</span>
+                <span class="status">offline • 1.93 Гб</span>
+            </div>
+            <div class="date-info">
+                <span class="date">до 27 сентября 2025</span>
+                <span class="expired-label">подписка истекла</span>
+            </div>
+        </section>
+
+        <!-- Actions Section -->
+        <section class="actions-section">
+            <button class="btn btn-primary">
+                <span class="icon">
+                    <svg viewBox="0 0 24 24"><path d="M16,11.2C16,10 15.6,9.2 14.8,8.4L13.5,7.1C12.7,6.3 12.8,6 13,5.8L14.4,4.4C14.6,4.2 14.6,3.8 14.4,3.6L12.9,2.1C12.7,1.9 12.3,1.9 12.1,2.1L10.7,3.5C10.5,3.7 10.7,4 11.5,4.8C12.3,5.6 13,6 12.8,6.2L7.2,11.8C7,11.6 6.4,11.7 5.6,12.5C4.8,13.3 4.4,14 4.8,14.2L3.4,15.6C3.2,15.8 3.2,16.2 3.4,16.4L4.9,17.9C5.1,18.1 5.5,18.1 5.7,17.9L7.1,16.5C7.3,16.3 7.2,16.4 7,15.6C6.2,14.8 6.6,14.2 6.8,14L11,9.8C11.2,10 11.7,10.2 12.5,9.5C13.3,8.7 14,8.4 14.2,8.6L15.6,7.2C15.8,7 16.2,7 16.4,7.2L17.9,8.7C18.1,8.9 18.1,9.3 17.9,9.5L16.5,10.9C16.3,11.1 16.4,11.2 16,11.2M17.6,14.4L19,13C19.8,12.2 20.1,12.2 20.3,12.4L21.7,13.8C21.9,14 21.9,14.4 21.7,14.6L20.2,16.1C20,16.3 19.8,16.2 18.9,15.3C18.1,14.5 17.8,14.6 17.6,14.4Z" /></svg>
+                </span>
+                Купить подписку
+                <span class="price">от 150 ₽</span>
+            </button>
+            <button class="btn btn-outline">
+                <span class="icon">
+                     <svg viewBox="0 0 24 24"><path d="M19.1,11.4C19.1,11.4 19.3,11.2 19.5,11C20.3,10.2 20.3,9 19.5,8.2L16,4.7C15.2,3.9 14,3.9 13.2,4.7L12.7,5.2C12.5,5.4 12.5,5.7 12.7,5.9L13.7,6.9L13.2,7.4C13,7.6 13,8 13.2,8.2L14.2,9.2L13.7,9.7C13.5,9.9 13.5,10.2 13.7,10.4L14.7,11.4L14.2,11.9C14,12.1 14,12.5 14.2,12.7L15.2,13.7L13.4,15.5C13.2,15.7 13.2,16.1 13.4,16.3L14.8,17.7C15,17.9 15.3,17.9 15.5,17.7L19.1,14.1C19.3,13.9 19.3,13.5 19.1,13.3L18.6,12.8L19.1,12.3C19.3,12.1 19.3,11.7 19.1,11.4M4.5,19.5C4.5,19.5 4.5,19.5 4.5,19.5L8,16L4,12L1.5,14.5C0.7,15.3 0.7,16.5 1.5,17.3L2.7,18.5C3.5,19.3 4.7,19.3 5.5,18.5L6.5,17.5L4.5,19.5M9.2,14.8L10.2,13.8L9.7,13.3C9.5,13.1 9.5,12.8 9.7,12.6L10.7,11.6L10.2,11.1C10,10.9 10,10.5 10.2,10.3L11.2,9.3L10.7,8.8C10.5,8.6 10.5,8.2 10.7,8L11.7,7L7,2.3C6.2,1.5 5,1.5 4.2,2.3L2.3,4.2C1.5,5 1.5,6.2 2.3,7L9.2,14.8Z" /></svg>
+                </span>
+                Установка и настройка
+                <span class="os">Windows</span>
+            </button>
+            <div class="btn-group">
+                <button class="btn btn-outline">
+                    <span class="icon">
+                        <svg viewBox="0 0 24 24"><path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z" /></svg>
+                    </span>
+                    Профиль
+                </button>
+                <button class="btn btn-outline">
+                    <span class="icon">
+                        <svg viewBox="0 0 24 24"><path d="M20,2H4A2,2 0 0,0 2,4V22L6,18H20A2,2 0 0,0 22,16V4A2,2 0 0,0 20,2M6,9H18V11H6M14,14H6V12H14M18,8H6V6H18" /></svg>
+                    </span>
+                    Поддержка
+                </button>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="card-footer">
+            @unlimited
+        </footer>
+
+    </div>
+
+</body>
+</html>
