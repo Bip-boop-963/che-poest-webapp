@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>Чё поесть?</title>
-<!-- ИСПРАВЛЕНИЕ ДЛЯ IPHONE И ДРУГИХ МОБИЛЬНЫХ УСТРОЙСТВ -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 :root {
@@ -13,7 +12,7 @@
 
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background: #fff8e7;
   display: flex;
   justify-content: center;
@@ -197,8 +196,43 @@ backButton.addEventListener('click', () => { dishesContainers.forEach(dc => dc.c
 const dishCount = {};
 function updateList(name) { dishCount[name] = (dishCount[name] || 0) + 1; cart.innerHTML = ''; for (const [dish, count] of Object.entries(dishCount)) { const li = document.createElement('li'); li.textContent = count > 1 ? `${dish} ×${count}` : dish; cart.appendChild(li); } listBox.style.display = 'block'; }
 allDishes.forEach(dish => dish.addEventListener('click', () => updateList(dish.dataset.name)));
-document.getElementById('clear').addEventListener('click', () => { cart.innerHTML = ''; listBox.style.display = 'none'; for (let key in dishCount) delete dishCount[key]; });
-checkoutBtn.addEventListener('click', () => { const items = Array.from(document.querySelectorAll('#list li')).map(li => li.textContent); if (items.length === 0) return alert("Список пуст!"); let noteText = items.map(item => `☐ ${item}`).join('\n'); prompt("Скопируйте список для заметок:", noteText); });
+
+// --- ИЗМЕНЕНИЕ 1: ПОДТВЕРЖДЕНИЕ ПЕРЕД ОЧИСТКОЙ ---
+document.getElementById('clear').addEventListener('click', () => {
+  if (confirm("Вы уверены, что хотите очистить список?")) {
+    cart.innerHTML = '';
+    listBox.style.display = 'none';
+    for (let key in dishCount) delete dishCount[key];
+  }
+});
+
+// --- ИЗМЕНЕНИЕ 2: ОТПРАВКА В ЗАМЕТКИ ЧЕРЕЗ СИСТЕМНОЕ МЕНЮ ---
+checkoutBtn.addEventListener('click', async () => {
+  const items = Array.from(document.querySelectorAll('#list li')).map(li => li.textContent);
+  if (items.length === 0) {
+    alert("Список пуст!");
+    return;
+  }
+  
+  let noteText = "Мой список:\n" + items.map(item => `☐ ${item}`).join('\n');
+  
+  // Проверяем, поддерживает ли браузер Web Share API
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: 'Что поесть?',
+        text: noteText,
+      });
+      // console.log('Список успешно отправлен');
+    } catch (err) {
+      console.error('Ошибка при отправке списка:', err);
+    }
+  } else {
+    // Если не поддерживает - используем старый метод
+    prompt("Скопируйте список для заметок:", noteText);
+  }
+});
+
 setTimeout(() => { document.querySelector('.loader').style.display = 'none'; document.getElementById('menu-container').style.display = 'flex'; }, 1000);
 </script>
 </body>
