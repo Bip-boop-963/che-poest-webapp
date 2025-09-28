@@ -3,7 +3,7 @@ from telegram.ext import ApplicationBuilder, CommandHandler, CallbackContext
 
 TOKEN = "7533731133:AAHfTRL39AHagjCMT8ZZ7Xdi0LMgCu6-ues"
 
-async def start(update: Update, context: CallbackContext.DEFAULT_TYPE):
+async def start(update: Update, context: CallbackContext):
     keyboard = [
         [InlineKeyboardButton("Открыть Чё поесть?", web_app=WebAppInfo(
             url="https://Bip-boop-963.github.io/che-poest-webapp/"))]
