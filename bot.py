@@ -5,8 +5,8 @@ TOKEN = "7533731133:AAHfTRL39AHagjCMT8ZZ7Xdi0LMgCu6-ues"
 
 async def start(update: Update, context: CallbackContext):
     keyboard = [
-        [InlineKeyboardButton("Открыть Чё поесть?", web_app=WebAppInfo(
-            url="https://Bip-boop-963.github.io/che-poest-webapp/"))]
+        [InlineKeyboardButton("Открыть Чё поесть?", 
+        web_app=WebAppInfo(url="https://Bip-boop-963.github.io/che-poest-webapp/?v=2"))]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     await update.message.reply_text("Привет! Выбери что-то вкусное:", reply_markup=reply_markup)
